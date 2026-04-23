@@ -1,0 +1,125 @@
+# ---------- Build artifacts ----------
+build/
+build-*/
+cmake-build-*/
+out/
+bin/
+obj/
+_build/
+install/
+dist/
+
+# CMake-generated
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
+CTestTestfile.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+!.clang-format
+compile_commands.json
+Testing/
+
+# Ninja
+.ninja_deps
+.ninja_log
+build.ninja
+rules.ninja
+
+# ---------- Object / binary files ----------
+*.o
+*.obj
+*.lo
+*.slo
+*.ko
+*.so
+*.so.*
+*.dylib
+*.dll
+*.a
+*.lib
+*.la
+*.lai
+*.pdb
+*.ilk
+*.exp
+*.exe
+*.out
+*.app
+*.idb
+
+# ---------- Dependency caches ----------
+.cache/
+_deps/
+vcpkg_installed/
+conan/
+.conan/
+
+# ---------- Parquet output + scenario-run artifacts ----------
+*.parquet
+*.parq
+parquet_out/
+sweep_out/
+sync_logs/
+*.rcsim-log
+*.rcsim-ckpt
+
+# ---------- Editor / IDE ----------
+.vscode/
+!.vscode/settings.json.example
+.idea/
+*.iml
+*.ipr
+*.iws
+.vs/
+.fleet/
+*.swp
+*.swo
+*.swn
+*~
+.*.kate-swp
+
+# ---------- OS artifacts ----------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.directory
+*.lnk
+
+# ---------- Python (for future bindings) ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+*.egg-info/
+.venv/
+venv/
+env/
+
+# ---------- Secrets / local-only ----------
+.env
+.env.*
+!.env.example
+*.local
+secrets.*
+*.pem
+*.key
+
+# ---------- Local scratch ----------
+scratch/
+local/
+tmp/
