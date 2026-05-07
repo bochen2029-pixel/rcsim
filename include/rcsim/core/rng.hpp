@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <array>
 
+#include <pcg_random.hpp>     // pcg-cpp via FetchContent (§15)
+
 namespace rc::sim::core {
 
 // §2.3: Substream identifiers. Values frozen per scheme_major per §10.1a enum rules.
@@ -34,11 +36,9 @@ public:
     // TODO(phase 1, §2.3): return next double in [0.0, 1.0); uses next_uint64 with canonical conversion.
     double next_double() noexcept;
 
-    // Internal state (opaque; 128 bits for PCG64). Not serialized directly;
-    // sync log emits (scenario_seed, substream_id) and reconstructs.
-    // TODO(phase 1, §2.3): populate per pcg_cpp implementation
-    uint64_t state_ = 0;
-    uint64_t inc_   = 0;
+    // Internal state — a pcg-cpp pcg64 engine. Not serialized directly;
+    // sync log emits (scenario_seed, substream_id) and reconstructs (§10.1).
+    pcg64 engine_{0};
 };
 
 // §2.3: Philox-4x32-10 counter-based RNG, keyed.

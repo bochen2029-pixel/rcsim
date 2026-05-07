@@ -6,6 +6,8 @@
 
 #include "rcsim/state/pending.hpp"
 
+namespace rc::sim::state { struct WorldState; }
+
 namespace rc::sim::action {
 
 // Re-export state-layer effect types into the action namespace for convenience.
@@ -20,5 +22,12 @@ using state::DistortionBudget;
 using state::AttributionBudget;
 using state::GateTransition;
 using state::RegimeTransition;
+
+// §9.1 / §5.2: walk WorldState::pending in canonical order; apply mutations
+// for any effect whose activates_at == current tick.
+void mature_pending(state::WorldState& s) noexcept;
+
+// §9.8: erase pending effects whose expires_at < current tick.
+void retire_expired(state::WorldState& s) noexcept;
 
 }  // namespace rc::sim::action

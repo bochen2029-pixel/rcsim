@@ -1,0 +1,56 @@
+# Phase 2 multi-territory smoke scenario.
+#
+# Three territories with different initial conditions; exercises:
+#   - integer_network_flow_solve over a non-empty network
+#   - mature_pending / retire_expired walks
+#   - migration_flux when adjacency is populated
+# (Note: no adjacency.edges populated yet — Phase 2 geo loader is stubbed.)
+#
+# Use case: regression scenario for the §9 advance loop's multi-territory path.
+# Final hash is deterministic but not yet committed as a golden master because
+# adjacency comes from GeoJSON loading which is Phase 2's last unimplemented bit.
+
+scenario_seed: 100
+ticks: 520
+
+global:
+  A: 1.0
+  S_AI_index: 1.0
+  D_global: 0.0
+
+territories:
+  - id: 0
+    owner: 0
+    r: 5.0
+    H: 1.0e8
+    G: 1.0e6
+    M: 1.0e9
+    Npop: 3.3e8
+    S: 1.0
+    Qelec: 100.0
+    Qliq: 100.0
+    D_local: 0.0
+
+  - id: 1
+    owner: 1
+    r: 4.0
+    H: 8.0e7
+    G: 5.0e5
+    M: 5.0e8
+    Npop: 1.4e9
+    S: 0.8
+    Qelec: 80.0
+    Qliq: 60.0
+    D_local: 0.0
+
+  - id: 2
+    owner: 2
+    r: 6.0
+    H: 4.0e7
+    G: 3.0e5
+    M: 8.0e8
+    Npop: 8.4e7
+    S: 0.6
+    Qelec: 30.0
+    Qliq: 200.0
+    D_local: 0.0

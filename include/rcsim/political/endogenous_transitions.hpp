@@ -9,6 +9,8 @@
 // Forward declare to avoid circular include; state::PrincipalState is authored in state/principal.hpp.
 namespace rc::sim::state { struct PrincipalState; struct WorldState; }
 
+#include "rcsim/political/regime.hpp"
+
 namespace rc::sim::political {
 
 // §7.5: evaluate Democracy → FailedState transition trigger.

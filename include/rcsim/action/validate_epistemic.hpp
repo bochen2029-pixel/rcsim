@@ -6,7 +6,6 @@
 // §16.2 property test: epistemic_validation_no_leak.cpp + fizzle_no_ground_truth_leak.cpp.
 
 #include <cstdint>
-#include <string>
 
 #include "rcsim/action/action.hpp"
 #include "rcsim/state/territory.hpp"
@@ -18,17 +17,29 @@ struct Observation;
 
 namespace rc::sim::action {
 
+// R-13: ValidationReason — closed enum frozen at schema_major (additive only
+// within schema_minor). Stored in canonical wire format as uint32 LE per §10.1a.
+enum class ValidationReason : uint32_t {
+    Ok                     = 0,
+    InsufficientTreasury   = 1,
+    InsufficientLegitimacy = 2,
+    NotOwnedByActor        = 3,
+    PoliticalClockGated    = 4,
+    DistortionLockout      = 5,
+    UnknownTarget          = 6,
+    InvalidParameters      = 7,
+    DurationOutOfRange     = 8,
+    PrincipalLockedOut     = 9
+};
+
 // §5.4: ValidationResult.
 struct ValidationResult {
     bool ok;
-    // SPEC_AMBIGUOUS(§5.4): reason-code enum not enumerated in spec; using string stub.
-    //   Phase 2 should replace with a stable enum for determinism.
-    std::string reason;
+    ValidationReason reason;
 };
 
 // §5.4, §9.2a: validate_epistemic — checks action against principal's last_seen observation.
 //   ok == true means principal BELIEVES action is valid (may still Fizzle at apply).
-// TODO(phase 2, §5.4, §9.2a): implement per DESIGN_v1.3.md §5.4
 [[nodiscard]] ValidationResult validate_epistemic(
     const observer::Observation& obs,
     state::PrincipalId actor,

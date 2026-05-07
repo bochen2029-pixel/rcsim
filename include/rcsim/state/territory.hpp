@@ -49,4 +49,9 @@ struct alignas(64) TerritoryState {
 static_assert(sizeof(double) == 8,
     "§3.1 TerritoryState layout assumes 8-byte doubles (IEEE-754 binary64).");
 
+// R-01, R-02: 9 doubles (72 B) + 2 uint32 (8 B) + 32 B pad = 112 B; alignas(64)
+// rounds up to 128 B. Determinism gate.
+static_assert(sizeof(TerritoryState) == 128,
+    "R-02: TerritoryState must be exactly 128 bytes for cross-compiler hash equality.");
+
 }  // namespace rc::sim::state

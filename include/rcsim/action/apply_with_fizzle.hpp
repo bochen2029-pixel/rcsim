@@ -6,7 +6,7 @@
 // impossible (e.g., target already destroyed). Fizzle is information-bearing
 // (actor notices resources gone, no effect) but does NOT leak specific ground-truth state.
 
-#include <string>
+#include <cstdint>
 
 #include "rcsim/action/action.hpp"
 #include "rcsim/state/territory.hpp"
@@ -14,13 +14,25 @@
 
 namespace rc::sim::action {
 
+// R-14: FizzleReason — closed enum frozen at schema_major (additive only within
+// schema_minor). Distinct from ValidationReason: this surfaces post-validation
+// ground-truth failure. Wire-format: uint32 LE per §10.1a.
+enum class FizzleReason : uint32_t {
+    None                    = 0,
+    TargetAlreadyDestroyed  = 1,
+    TargetOwnerChanged      = 2,
+    SupplyExhausted         = 3,
+    GeographyImpossible     = 4,
+    GateClosedAtApply       = 5,
+    ConflictDegraded        = 6
+};
+
 // §5.4: ApplyResult — outcome of ground-truth apply.
 struct ApplyResult {
-    state::WorldState state;   // mutated state
-    bool applied = false;      // physical effect took hold
-    bool fizzled = false;      // ground truth made action impossible
-    // SPEC_AMBIGUOUS(§5.4): reason enum not enumerated; string stub per validate_epistemic.
-    std::string reason;
+    state::WorldState state;
+    bool applied = false;
+    bool fizzled = false;
+    FizzleReason reason = FizzleReason::None;
 };
 
 // §5.4, §9.2b: deduct_resources — unconditional on ground truth.

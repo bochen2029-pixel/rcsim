@@ -1,0 +1,30 @@
+# Phase 1 gate scenario: simplified v5 mean-field retrodiction.
+#
+# Single territory, gates effectively-on (positive Q_elec/Q_liq), no kinetic
+# shocks, no actions, no observer distortion. Trajectory should be smooth and
+# bounded; canonical hash bit-identical across compilers.
+#
+# This is the §19 Phase 1 gate input — see docs/PHASE_0_2_PLAN.md §5.
+#
+# Energy fields in EJ/yr per §2.2 (NOT J/yr — v1.2 → v1.3 unit shift).
+
+scenario_seed: 42
+ticks: 520            # 10 simulated years at 1 week/tick
+
+global:
+  A: 1.0              # capability ratio (Diamond Floor); monotone non-decreasing
+  S_AI_index: 1.0     # initial AI legitimacy index
+  D_global: 0.0       # cumulative discovery accumulator
+
+territories:
+  - id: 0
+    owner: 0
+    r: 5.0            # EROEI ~5 (mid-range modern industrial baseline)
+    H: 1.0e8          # 100M employed cognitive labor
+    G: 1.0e6          # 1M HE-units of deployed AI compute
+    M: 1.0e9          # USD-eq financial claims
+    Npop: 3.3e8       # ~330M population
+    S: 1.0
+    Qelec: 100.0      # 100 EJ/yr conditioned-grid surplus
+    Qliq: 100.0       # 100 EJ/yr liquid hydrocarbon surplus
+    D_local: 0.0

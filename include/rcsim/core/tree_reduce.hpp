@@ -21,24 +21,23 @@ struct IdentityFor;
 // - Input span is iterated in fixed order (caller provides canonically-ordered values).
 // - Buffer padded to next power of two with identity element.
 // - Pairs combined in-place at fixed stride. No thread-scheduling dependence.
-// TODO(phase 1, §2.4): implement per DESIGN_v1.3.md §2.4 (reference body in spec)
+// - Bit-identical across compilers under strict IEEE-754 because the pair-ordering
+//   and pad-count are deterministic functions of values.size().
 template <typename T, typename Op>
 T deterministic_tree_reduce(std::span<const T> values, Op binary_op) {
-    // TODO(phase 1, §2.4): implement the reference body:
-    //   if (values.empty()) return T{};
-    //   std::vector<T> buffer(values.begin(), values.end());
-    //   size_t padded = std::bit_ceil(buffer.size());
-    //   buffer.resize(padded, IdentityFor<Op>::value);
-    //   while (padded > 1) {
-    //     for (size_t i = 0; i < padded / 2; ++i) {
-    //       buffer[i] = binary_op(buffer[2*i], buffer[2*i + 1]);
-    //     }
-    //     padded /= 2;
-    //   }
-    //   return buffer[0];
-    (void)values;
-    (void)binary_op;
-    return T{};
+    if (values.empty()) {
+        return IdentityFor<Op>::value;
+    }
+    std::vector<T> buffer(values.begin(), values.end());
+    size_t padded = std::bit_ceil(buffer.size());
+    buffer.resize(padded, IdentityFor<Op>::value);
+    while (padded > 1) {
+        for (size_t i = 0; i < padded / 2; ++i) {
+            buffer[i] = binary_op(buffer[2 * i], buffer[2 * i + 1]);
+        }
+        padded /= 2;
+    }
+    return buffer[0];
 }
 
 // §2.4: Sum-of-doubles specialization. Identity = 0.0.
