@@ -27,11 +27,11 @@ struct AdjacencyGraph {
 };
 
 // §18: derive_adjacency — compute adjacency graph from GeoJSON polygons via shared edges.
-//   Shared-edge test uses exact coordinate equality (snapped to fixed-point grid during
-//   GeoJSON load) to avoid floating-point near-miss ambiguity.
-// SPEC_AMBIGUOUS(§18): coordinate snapping grid not pinned; default to 1e-9 deg snap
-//   during phase 2. Revisit for correctness on dateline crossings.
-// TODO(phase 2, §18): implement per DESIGN_v1.3.md §18
+// R-19 pins the snap grid at 1e-7 deg (~1.1 cm at equator); coordinates are snapped on
+// GeoJSON load (geo/geojson.cpp). Shared-edge test uses exact double-equality on snapped
+// coordinates — integer round-trip is bit-exact under strict IEEE-754.
+// Dateline crossing (lon ≈ ±180°) is not handled in v1; territories near the dateline
+// must be authored to use a consistent sign convention or the adjacency will miss them.
 AdjacencyGraph derive_adjacency(const GeoLoadResult& geoms);
 
 }  // namespace rc::sim::geo

@@ -85,16 +85,19 @@ ODESystem::Deriv ODESystem::derivative(
     double g_e = p.lambda * eta_i;
     double dS = (g_e - p.delta_s) * t.S;
 
-    // RC-7: dQelec = kappa_elec · r - c_elec(H, G, N) + flux_elec - convert_liq_to_elec
-    //   Phase 1: c_elec is per-capita consumption; flux/convert from coupling = 0.
-    double c_elec = 1.0e-4 * t.Npop + 1.0e-3 * t.G;       // first-pass; calibrated in 7b
-    double dQelec = p.kappa_elec * t.r - c_elec;
+    // RC-7: dQelec = kappa_elec · r - c_elec(H, G, N) · gate + flux_elec - convert_liq_to_elec
+    //   Coefficients are physical first-pass (calibration target Phase 7b):
+    //     - 7e-8 EJ/yr per person ≈ 70 GJ/yr/person (OECD average per-capita energy)
+    //     - 1e-9 EJ/yr per HE-unit ≈ AI compute share, far smaller than gross.
+    //   Gating by tick-boundary theta_elec (§4.5 / §8.2 — gate held constant
+    //   across RK4 substages) keeps Q in the basin without mid-tick discontinuity.
+    double c_elec_raw = 7.0e-8 * t.Npop + 1.0e-9 * t.G;
+    double dQelec = p.kappa_elec * t.r - c_elec_raw * gates.theta_elec[i];
 
-    // RC-8: dQliq = kappa_liq · r - c_liq(N, military) + flux_liq - convert_elec_to_liq - blockade
-    //   Phase 2: military = 0 (no MobilizeMilitary actions yet); blockade reads
-    //   active BlockadeEdge effects from WorldState::pending.
-    double c_liq = 1.0e-4 * t.Npop;
-    double dQliq = p.kappa_liq * t.r - c_liq - blockade(t, s);
+    // RC-8: dQliq = kappa_liq · r - c_liq · gate + flux_liq - convert_elec_to_liq - blockade
+    //   Liquid hydrocarbon is roughly 0.6× per-capita electric in industrial economies.
+    double c_liq_raw = 4.2e-8 * t.Npop;
+    double dQliq = p.kappa_liq * t.r - c_liq_raw * gates.theta_supply[i] - blockade(t, s);
 
     // dD_local = G · kappa
     double dD_local = t.G * p.kappa;

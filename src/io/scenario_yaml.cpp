@@ -10,6 +10,8 @@
 #include <ryml.hpp>
 #include <ryml_std.hpp>
 
+#include "rcsim/geo/adjacency.hpp"
+#include "rcsim/geo/geojson.hpp"
 #include "rcsim/state/world_state.hpp"
 
 // §12: Scenario YAML loader.
@@ -94,6 +96,21 @@ state::WorldState load_scenario(const std::string& yaml_path) {
     s.global.S_AI_index = 1.0;
 
     s.global.seed_scenario = read_uint64(root["scenario_seed"], 0);
+
+    // Optional companion GeoJSON for adjacency. Path is resolved relative to
+    // the scenario file's directory if not absolute.
+    if (root.has_child("geojson") && root["geojson"].has_val()) {
+        std::string geojson_path;
+        root["geojson"] >> geojson_path;
+        if (!geojson_path.empty() && geojson_path.front() != '/') {
+            auto slash = yaml_path.find_last_of('/');
+            if (slash != std::string::npos) {
+                geojson_path = yaml_path.substr(0, slash + 1) + geojson_path;
+            }
+        }
+        auto geoms = geo::load_geojson(geojson_path);
+        s.adjacency = geo::derive_adjacency(geoms);
+    }
 
     if (root.has_child("global")) {
         auto g = root["global"];

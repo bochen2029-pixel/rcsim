@@ -31,6 +31,11 @@ foreach(category ${RCSIM_TEST_CATEGORIES})
             rcsim-core
             Catch2::Catch2WithMain
         )
+        # Tests need to find scenario files (e.g. scenarios/grid_150.yaml).
+        # Pin the source dir at compile time so tests can resolve relative paths.
+        target_compile_definitions(${target_name} PRIVATE
+            RCSIM_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+        )
 
         # catch_discover_tests registers each Catch2 TEST_CASE as a separate ctest entry.
         # We pass the Catch2 [!hide] / [pending] tag exclusion via the test invocation

@@ -12,14 +12,20 @@
 namespace rc::sim::geo {
 
 // §12, §18: TerritoryGeom — polygonal shape for a single territory.
-// SPEC_AMBIGUOUS(§12): GeoJSON schema not pinned in spec. Using GeoJSON Feature with
-//   Polygon/MultiPolygon geometry and "territory_id" property; refine during phase 2.
+// R-17 schema: GeoJSON FeatureCollection per RFC 7946. Each Feature is a
+// Polygon or MultiPolygon with required `properties.territory_id` (uint32).
+// Coordinates are decimal degrees [longitude, latitude], snapped to 1e-7
+// per R-19 on load.
 struct TerritoryGeom {
     state::TerritoryId id;
-    // §12: ring of (lon, lat) pairs. Multi-polygon territories hold multiple rings.
-    // TODO(phase 2, §12): populate with outer + holes per GeoJSON schema
-    std::vector<double> coord_flat;   // [lon0, lat0, lon1, lat1, ...]
+    // Linear rings stored as flat (lon, lat) pairs. `ring_offsets` indexes
+    // into `coord_flat`: ring k covers indices [ring_offsets[k], ring_offsets[k+1]).
+    // Outer ring is ring 0 of each polygon; holes (if any) follow as additional rings.
+    // For MultiPolygon, all rings of all polygons are concatenated; polygon
+    // boundaries are recorded in `polygon_offsets` (indexes into ring_offsets).
+    std::vector<double>   coord_flat;
     std::vector<uint32_t> ring_offsets;
+    std::vector<uint32_t> polygon_offsets;
 };
 
 // §12: GeoLoadResult — aggregate of loaded territories.
