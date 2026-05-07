@@ -123,3 +123,8 @@ secrets.*
 scratch/
 local/
 tmp/
+
+# ---------- Patch artifacts ----------
+# git format-patch output, used as a transient sync mechanism between sandbox
+# sessions and local clones. Never committed — the underlying commits are.
+*.patch
